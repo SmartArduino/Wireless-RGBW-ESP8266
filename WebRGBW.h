@@ -28,7 +28,7 @@ class WebRGBW {
   private:
     bool _initialized = false;
     FadeLed* _leds[4];
-    byte _numberOfLeds = 3;
+    byte _numberOfLeds = 0;
 
     static byte AsciiToHex(char c); //Utils
     void SetColor(byte* colorCode);

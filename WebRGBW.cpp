@@ -54,19 +54,6 @@ void WebRGBW::Init(byte model) {
       _leds[1] = new FadeLed(14);
       _leds[2] = new FadeLed(12);
       _leds[3] = new FadeLed(13);
-      _leds[0]->setGammaTable(gamma8, 255);
-      _leds[1]->setGammaTable(gamma8, 255);
-      _leds[2]->setGammaTable(gamma8, 255);
-      _leds[3]->setGammaTable(gamma8, 255);
-      FadeLed::setInterval(20);
-      _leds[0]->setTime(1000, true);
-      _leds[1]->setTime(1000, true);
-      _leds[2]->setTime(1000, true);
-      _leds[3]->setTime(1000, true);
-      _leds[0]->begin(0);
-      _leds[1]->begin(0);
-      _leds[2]->begin(0);
-      _leds[3]->begin(0);
       _numberOfLeds = 4;
       break;
 
@@ -74,18 +61,15 @@ void WebRGBW::Init(byte model) {
       _leds[0] = new FadeLed(14);
       _leds[1] = new FadeLed(5);
       _leds[2] = new FadeLed(12);
-      _leds[0]->setGammaTable(gamma8, 255);
-      _leds[1]->setGammaTable(gamma8, 255);
-      _leds[2]->setGammaTable(gamma8, 255);
-      FadeLed::setInterval(20);
-      _leds[0]->setTime(1000, true);
-      _leds[1]->setTime(1000, true);
-      _leds[2]->setTime(1000, true);
-      _leds[0]->begin(0);
-      _leds[1]->begin(0);
-      _leds[2]->begin(0);
       _numberOfLeds = 3;
       break;
+  }
+
+  FadeLed::setInterval(20);
+  for (byte i = 0; i < _numberOfLeds; i++) {
+    _leds[i]->setGammaTable(gamma8, 255);
+    _leds[i]->setTime(1000, true);
+    _leds[i]->begin(0);
   }
 
   Run();
@@ -156,6 +140,26 @@ void WebRGBW::InitWebServer(AsyncWebServer &server) {
 
   server.on("/getJSONColor", HTTP_GET, [this](AsyncWebServerRequest * request) {
     request->send(200, F("text/html"), GetColor(true));
+  });
+
+  server.on("/setTime", HTTP_GET, [this](AsyncWebServerRequest * request) {
+
+    //try to find color code
+    if (!request->hasParam(F("time"))) {
+      request->send(400, F("text/html"), F("Missing time parameter"));
+      return;
+    }
+
+    int time = request->getParam(F("time"))->value().toInt();
+
+    //check time value
+    if (!time || time > 100) {
+      request->send(400, F("text/html"), F("Incorrect time value"));
+      return;
+    }
+
+    for (byte i = 0; i < _numberOfLeds; i++) _leds[i]->setTime(time * 100, true);
+    request->send(200);
   });
 
   server.on("/gs1", HTTP_GET, [this](AsyncWebServerRequest * request) {
