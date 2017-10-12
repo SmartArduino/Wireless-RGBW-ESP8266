@@ -3,7 +3,6 @@
 
 unsigned int FadeLed::_interval = 50;
 unsigned int FadeLed::_millisLast = 0;
-bool FadeLed::_firstUpdate = true;
 byte FadeLed::_ledCount = 0;
 FadeLed* FadeLed::_ledList[FADE_LED_MAX_LED];
 
@@ -232,17 +231,11 @@ void FadeLed::update(){
   if(!_ledCount){
     return;
   }
-
-  if(_firstUpdate){
-    _millisLast=millisNow;
-    _firstUpdate=false;
-  }
   
   if(millisNow - _millisLast > _interval){
-    //_millisLast = millisNow;
-    //more accurate:
-    _millisLast += _interval;
-
+    if(_millisNow - _millisLast > (_interval << 2) _millisLast = millisNow;
+    else _millisLast += _interval;
+        
     //update every object
     for(byte i = 0; i < _ledCount; i++){
       _ledList[i]->updateThis();

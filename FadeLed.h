@@ -390,7 +390,6 @@ class FadeLed{
     static byte _ledCount; //!< Next number of FadeLed object
     static unsigned int _interval; //!< Interval (in ms) between updates
     static unsigned int _millisLast; //!< Last time all FadeLed objects where updated
-    static bool _firstUpdate;
 };
 
 inline flvar_t FadeLed::getGamma(flvar_t step){
